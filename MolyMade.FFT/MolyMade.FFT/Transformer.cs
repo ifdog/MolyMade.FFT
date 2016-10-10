@@ -19,14 +19,16 @@ namespace MolyMade.FFT
 				alglib.fftr1d(d,out rowComplexs);
 				return rowComplexs;
 			}).ToArray();
-
+			int[,] a = new int[1,1];
+			int[][] b = new int[1][];
+	
 		}
 
-		private alglib.complex[][] zz(alglib.complex[][] old)
+		private alglib.complex[,] zz(alglib.complex[,] old)
 		{
 			int x = old.GetUpperBound(0);
 			int y = old.GetUpperBound(1);
-			var neu = new alglib.complex[y+1][x+1];
+			var neu = new alglib.complex[y+1,x+1];
 			for (int i = 0; i <= y; i++)
 			{
 				for (int j = 0; j <= x; j++)
