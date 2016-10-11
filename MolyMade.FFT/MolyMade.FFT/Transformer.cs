@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 
 namespace MolyMade.FFT
@@ -11,32 +14,21 @@ namespace MolyMade.FFT
 	public class Transformer
 	{
 
-		public Matrix<alglib.complex> Fft2D(Matrix<double> source)
+		private BitmapImage _image;
+		private byte[] _pixels;
+		public byte[,] ArrayOfAlpha => null;
+		public byte[,] ArrayOfRed => null;
+		public byte[,] ArrayOfGreen => null;
+		public byte[,] ArrayOfBlue => null;
+
+		public Transformer(string path)
 		{
-			return source.Select(s =>
-			{
-				alglib.complex[] rowComplexs;
-				alglib.fftr1d(s, out rowComplexs);
-				return rowComplexs;
-			}).ToMatrix().GetTransPosition().Select(s =>
-			{
-				alglib.fftc1d(ref s);
-				return s;
-			}).ToMatrix().GetTransPosition();
+			_image = new BitmapImage(new Uri(path));
+			_pixels = new byte[4*_image.PixelWidth*_image.PixelHeight];
+			_image.CopyPixels(new Int32Rect(0,0,_image.PixelWidth,_image.PixelHeight),
+				_pixels,_image.DecodePixelWidth*4,0 );
 		}
 
-		public Matrix<double> Fft2DInv(Matrix<alglib.complex> source)
-		{
-			return source.GetTransPosition().Select(s =>
-			{
-				alglib.fftc1dinv(ref s);
-				return s;
-			}).ToMatrix().GetTransPosition().Select(s =>
-			{
-				double[] doubles;
-				alglib.fftr1dinv(s, out doubles);
-				return doubles;
-			}).ToMatrix();
-		}
+
 	}
 }
