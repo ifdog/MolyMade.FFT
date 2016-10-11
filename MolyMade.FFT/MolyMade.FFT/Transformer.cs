@@ -11,36 +11,32 @@ namespace MolyMade.FFT
 	public class Transformer
 	{
 
-		public Matrix<alglib.complex> Fft2D(Matrix<double> doubles)
+		public Matrix<alglib.complex> Fft2D(Matrix<double> source)
 		{
-			return doubles.Select(d =>
+			return source.Select(s =>
 			{
 				alglib.complex[] rowComplexs;
-				alglib.fftr1d(d, out rowComplexs);
+				alglib.fftr1d(s, out rowComplexs);
 				return rowComplexs;
-			}).toMatrix().GetTransPosition().Select(d =>
+			}).ToMatrix().GetTransPosition().Select(s =>
 			{
-				alglib.complex[] rowComplexs = new alglib.complex[d.Length];
-				alglib.fftc1d(ref rowComplexs);
-				return rowComplexs;
-			}).toMatrix().GetTransPosition();
-
-
+				alglib.fftc1d(ref s);
+				return s;
+			}).ToMatrix().GetTransPosition();
 		}
 
-		private alglib.complex[][] zz(alglib.complex[][] old)
+		public Matrix<double> Fft2DInv(Matrix<alglib.complex> source)
 		{
-			int x = old.GetUpperBound(0);
-			int y = old.GetUpperBound(1);
-			var neu = new alglib.complex[y+1][];
-			for (int i = 0; i <= y; i++)
+			return source.GetTransPosition().Select(s =>
 			{
-				for (int j = 0; j <= x; j++)
-				{
-					neu[i, j] = old[j, i];
-				}
-			}
-			return neu;
+				alglib.fftc1dinv(ref s);
+				return s;
+			}).ToMatrix().GetTransPosition().Select(s =>
+			{
+				double[] doubles;
+				alglib.fftr1dinv(s, out doubles);
+				return doubles;
+			}).ToMatrix();
 		}
 	}
 }

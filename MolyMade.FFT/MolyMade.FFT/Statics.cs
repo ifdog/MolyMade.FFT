@@ -8,7 +8,7 @@ namespace MolyMade.FFT
 {
 	public static class Statics
 	{
-		public static Matrix<T> toMatrix<T>(this IEnumerable<T[]> iEnumerable)
+		public static Matrix<T> ToMatrix<T>(this IEnumerable<T[]> iEnumerable)
 		{
 			return new Matrix<T>(iEnumerable);
 		}

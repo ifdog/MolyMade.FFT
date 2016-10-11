@@ -28,7 +28,12 @@ namespace MolyMade.FFT
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
 			Transformer t = new Transformer();
-			var x = t.test(new double[] {1, 2, 3, 4, 5, 6});
+			var x = t.Fft2D(new Matrix<double>(new double[,]
+			{
+				{1, 2, 3, 4, 5, 6, 7},
+				{1, 2, 3, 4, 5, 6, 7}
+			}));
+			var y = t.Fft2DInv(x);
 		}
 	}
 }

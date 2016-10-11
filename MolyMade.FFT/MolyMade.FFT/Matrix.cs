@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,14 +17,15 @@ namespace MolyMade.FFT
 
 		public Matrix(T[][] elements)
 		{
-			int x = elements.Select(e => e.Length).Max();
-			int y = elements.Length;
+			int x = elements.Length;
+			int y = elements.Select(e => e.Length).Max();
+			
 			_dataArray = new T[x,y];
 			for (int i = 0; i < x; i++)
 			{
 				for (int j = 0; j < y; j++)
 				{
-					_dataArray[x, y] = elements[x][y];
+					_dataArray[i, j] = elements[i][j];
 				}
 			}
 		}
@@ -32,8 +34,8 @@ namespace MolyMade.FFT
 		{
 		}
 
+		private T[,] _dataArray;
 		public T this[int i, int j] => _dataArray[i,j];
-
 		public T[,] ToArray() => this.ArrayCopy(_dataArray);
 		public void TransPosition() => _dataArray = ArrayTransPosition(_dataArray);
 
@@ -42,7 +44,22 @@ namespace MolyMade.FFT
 			return new Matrix<T>(this.ArrayTransPosition(this._dataArray));
 		}
 
-		private  T[,] _dataArray;
+
+		public Matrix<TN> MapNew<TN>(Func<T,TN> func)
+		{
+			var array = this.ToArray();
+			int x = array.GetUpperBound(0);
+			int y = array.GetUpperBound(1);
+			var newArray = new TN[x+1,y+1];
+			for (int i = 0; i <= x; i++)
+			{
+				for (int j = 0; j <= y; j++)
+				{
+					newArray[i, j] = func(array[i, j]);
+				}
+			}
+			return new Matrix<TN>(newArray);
+		}
 
 		private T[,] ArrayCopy(T[,] source)
 		{
@@ -53,7 +70,7 @@ namespace MolyMade.FFT
 			{
 				for (int j = 0; j <= y; j++)
 				{
-					clone[x, y] = source[x, y];
+					clone[i, j] = source[i, j];
 				}
 			}
 			return clone;
@@ -68,7 +85,7 @@ namespace MolyMade.FFT
 			{
 				for (int j = 0; j <= x; j++)
 				{
-					trans[x, y] = source[y, x];
+					trans[i, j] = source[j, i];
 				}
 			}
 			return trans;
