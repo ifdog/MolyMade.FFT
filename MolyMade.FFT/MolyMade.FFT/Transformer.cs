@@ -5,30 +5,34 @@ using System.Text;
 using System.Threading.Tasks;
 
 
+
 namespace MolyMade.FFT
 {
 	public class Transformer
 	{
 
-		public double[,] Fft2D(double[,] doubles)
+		public Matrix<alglib.complex> Fft2D(Matrix<double> doubles)
 		{
-			
-			var rows = doubles.Select(d =>
+			return doubles.Select(d =>
 			{
 				alglib.complex[] rowComplexs;
-				alglib.fftr1d(d,out rowComplexs);
+				alglib.fftr1d(d, out rowComplexs);
 				return rowComplexs;
-			}).ToArray();
-			int[,] a = new int[1,1];
-			int[][] b = new int[1][];
-	
+			}).toMatrix().GetTransPosition().Select(d =>
+			{
+				alglib.complex[] rowComplexs = new alglib.complex[d.Length];
+				alglib.fftc1d(ref rowComplexs);
+				return rowComplexs;
+			}).toMatrix().GetTransPosition();
+
+
 		}
 
-		private alglib.complex[,] zz(alglib.complex[,] old)
+		private alglib.complex[][] zz(alglib.complex[][] old)
 		{
 			int x = old.GetUpperBound(0);
 			int y = old.GetUpperBound(1);
-			var neu = new alglib.complex[y+1,x+1];
+			var neu = new alglib.complex[y+1][];
 			for (int i = 0; i <= y; i++)
 			{
 				for (int j = 0; j <= x; j++)
