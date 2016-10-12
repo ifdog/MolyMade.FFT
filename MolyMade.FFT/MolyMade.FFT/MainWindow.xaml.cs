@@ -27,8 +27,8 @@ namespace MolyMade.FFT
 
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
-			string[] a = new[] {"a", "b", "c","d","e","f"};
-			var b = a.Fold2D(1);
+			Transformer t = new Transformer(@"D:\1.bmp");
+
 		}
 	}
 }
