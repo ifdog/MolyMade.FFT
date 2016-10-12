@@ -22,7 +22,7 @@ namespace MolyMade.FFT
 		public static T[] TakeEvery<T>(this T[] array, int start,int step)
 		{
 			if (start < 0 && start > array.Length) return null;
-			var newArray = new T[(array.Length-start)/step];
+			var newArray = new T[start == 0 ? (array.Length - start)/step : (array.Length - start)/step + 1];
 			for (int i = 0; i < newArray.Length; i++)
 			{
 				newArray[i] = array[start+i*step];
