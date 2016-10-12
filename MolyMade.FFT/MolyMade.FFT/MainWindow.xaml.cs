@@ -27,7 +27,7 @@ namespace MolyMade.FFT
 
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
-			var x = Enumerable.Range(0, 10).ToArray().PutEvery(Enumerable.Range(100, 4).ToArray(), 0, 3);
+			BitmapTransformer t  = new BitmapTransformer(@"D:\frice.png");
 
 		}
 	}

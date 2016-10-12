@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.Runtime.InteropServices;
 
 
 namespace MolyMade.FFT
@@ -14,34 +16,51 @@ namespace MolyMade.FFT
 	public class BitmapTransformer
 	{
 
-		private readonly BitmapImage _image;
+		private readonly Bitmap _bitmap;
 		private readonly byte[] _pixels;
-		public byte[] ArrayOfAlpha => _pixels.TakeEvery(3,4);
-		public byte[] ArrayOfRed => _pixels.TakeEvery(2,4);
-		public byte[] ArrayOfGreen => _pixels.TakeEvery(1,4);
-		public byte[] ArrayOfBlue => _pixels.TakeEvery(0,4);
 
 		public byte[,] Alpha
 		{
-			get { return _pixels.TakeEvery(3, 4).Fold2D(_image.PixelWidth); }
-			set
-			{
-				
-			}
+			get { return _pixels.TakeEvery(3, 4).Fold2D(_bitmap.Width); }
+			set { _pixels.PutEvery(value.Unfold2D(), 3, 4); }
 		}
-
-		public BitmapTransformer(BitmapImage bmp)
+		public byte[,] Red
 		{
-			_image = bmp;
-			_pixels = new byte[4*_image.PixelWidth*_image.PixelHeight];
-			_image.CopyPixels(new Int32Rect(0, 0, _image.PixelWidth, _image.PixelHeight),
-				_pixels, _image.PixelWidth*4, 0);
+			get { return _pixels.TakeEvery(2, 4).Fold2D(_bitmap.Width); }
+			set { _pixels.PutEvery(value.Unfold2D(), 2, 4); }
+		}
+		public byte[,] Green
+		{
+			get { return _pixels.TakeEvery(1, 4).Fold2D(_bitmap.Width); }
+			set { _pixels.PutEvery(value.Unfold2D(), 1, 4); }
+		}
+		public byte[,] Blue
+		{
+			get { return _pixels.TakeEvery(0, 4).Fold2D(_bitmap.Width); }
+			set { _pixels.PutEvery(value.Unfold2D(), 0, 4); }
 		}
 
-		public BitmapTransformer(string path) : this(new BitmapImage(new Uri(path)))
+		public BitmapTransformer(Bitmap bmp)
+		{
+			_bitmap = bmp;
+			_pixels = LockRead(_bitmap);
+
+		}
+
+		public BitmapTransformer(string path) : this(new Bitmap(path))
 		{
 		}
 
+		private byte[] LockRead(Bitmap bitmap)
+		{
+			var bmpData = _bitmap.LockBits(new Rectangle(0, 0, _bitmap.Width, _bitmap.Height),
+				ImageLockMode.ReadOnly, _bitmap.PixelFormat);
+			var ptr = bmpData.Scan0;
+			var bytes = new byte[Math.Abs(bmpData.Stride)*bitmap.Height];
+			Marshal.Copy(ptr,bytes,0,bytes.Length);
+			bitmap.UnlockBits(bmpData);
+			return bytes;
+		}
 
 	}
 }
