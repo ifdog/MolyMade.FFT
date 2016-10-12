@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MolyMade.FFT
 {
-	public static class Statics
+	public static class Extensions
 	{
 		public static Matrix<T> ToMatrix<T>(this IEnumerable<T[]> iEnumerable)
 		{
@@ -30,6 +30,24 @@ namespace MolyMade.FFT
 			return newArray;
 		}
 
+		public static T[] PutEvery<T>(this T[] array, T[] slice, int start, int step)
+		{
+			if (start < 0 || start > array.Length) return array;
+			var newArray = new T[array.Length];
+			for (int i = 0; i < newArray.Length; i++)
+			{
+				if (i>=start&&(i - start)%step == 0&&(i-start)/step<slice.Length)
+				{
+					newArray[i] = slice[(i - start)/step];
+				}
+				else
+				{
+					newArray[i] = array[i];
+				}
+			}
+			return newArray;
+		}
+
 		public static T[,] Fold2D<T>(this T[] array, int width)
 		{
 			if (width == 0) return null;
@@ -44,14 +62,14 @@ namespace MolyMade.FFT
 
 		public static T[] Unfold2D<T>(this T[,] array)
 		{
-			int x = array.GetUpperBound(0);
-			int y = array.GetUpperBound(1);
-			var newArray = new T[array.GetUpperBound(0)*array.GetUpperBound(1)];
-			for (int i = 0; i < x; i++)
+			int x = array.GetUpperBound(1);
+			int y = array.GetUpperBound(0);
+			var newArray = new T[(x + 1)*(y + 1)];
+			for (int i = 0; i <= x; i++)
 			{
-				for (int j = 0; j < y; j++)
+				for (int j = 0; j <= y; j++)
 				{
-					newArray[x*j + x] = array[x, y];
+					newArray[(x + 1)*j + i] = array[j, i];
 				}
 			}
 			return newArray;
