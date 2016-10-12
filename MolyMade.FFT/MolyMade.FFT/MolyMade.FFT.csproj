@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Fft.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="Statics.cs" />
     <Compile Include="Transformer.cs" />

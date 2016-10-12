@@ -27,7 +27,7 @@ namespace MolyMade.FFT
 
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
-			Transformer t = new Transformer(@"D:\1.bmp");
+			var c = new int[2, 2].Unfold2D();
 
 		}
 	}

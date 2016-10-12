@@ -41,5 +41,21 @@ namespace MolyMade.FFT
 			}
 			return newArray;
 		}
+
+		public static T[] Unfold2D<T>(this T[,] array)
+		{
+			int x = array.GetUpperBound(0);
+			int y = array.GetUpperBound(1);
+			var newArray = new T[array.GetUpperBound(0)*array.GetUpperBound(1)];
+			for (int i = 0; i < x; i++)
+			{
+				for (int j = 0; j < y; j++)
+				{
+					newArray[x*j + x] = array[x, y];
+				}
+			}
+			return newArray;
+		}
+
 	}
 }
