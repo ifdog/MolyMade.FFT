@@ -30,6 +30,18 @@ namespace MolyMade.FFT
 			BitmapTransformer bt = new BitmapTransformer(@"D:/1.bmp");
 			ImageWindow iw = new ImageWindow("new image",bt.BitmapImage);
 			iw.Show();
+			
+			var r = Fft.Fft2D(bt.Red.ToMatrix().MapNew(i => (double)i)).MapNew(i => (byte)(Math.Pow(i.x, 2) - Math.Pow(i.y, 2))).ToArray();
+			var g = Fft.Fft2D(bt.Red.ToMatrix().MapNew(i => (double)i)).MapNew(i => (byte)(Math.Pow(i.x, 2) - Math.Pow(i.y, 2))).ToArray();
+			var b = Fft.Fft2D(bt.Red.ToMatrix().MapNew(i => (double)i)).MapNew(i => (byte)(Math.Pow(i.x, 2) - Math.Pow(i.y, 2))).ToArray();
+
+			var z = bt.Red;
+			var x = z.ToMatrix().MapNew(i => Convert.ToDouble(i));
+			var y = Fft.Fft2D(z.ToMatrix().MapNew(Convert.ToDouble));
+			BitmapTransformer btf = new BitmapTransformer(r,g,b);
+			ImageWindow iwf = new ImageWindow("fft",btf.BitmapImage);
+			iwf.Show();
+
 		}
 	}
 }

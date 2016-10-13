@@ -18,18 +18,16 @@ namespace MolyMade.FFT
 	{
 		public Bitmap Bmp;
 		internal byte[] Pixels;
-		internal byte[,] Alpha => Pixels.TakeEvery(3, 4).Fold2D(Bmp.Width);
-		internal byte[,] Red => Pixels.TakeEvery(2, 4).Fold2D(Bmp.Width);
-		internal byte[,] Green => Pixels.TakeEvery(1, 4).Fold2D(Bmp.Width);
-		internal byte[,] Blue => Pixels.TakeEvery(0, 4).Fold2D(Bmp.Width);
+		internal byte[,] Red => Pixels.TakeEvery(2, 3).Fold2D(Bmp.Width);
+		internal byte[,] Green => Pixels.TakeEvery(1, 3).Fold2D(Bmp.Width);
+		internal byte[,] Blue => Pixels.TakeEvery(0, 3).Fold2D(Bmp.Width);
 		public BitmapImage BitmapImage => Bmp.ToBitmapImage();
 
 		public byte[][,] Argb
 		{
 			get
 			{
-				Pixels = LockRead(Bmp);
-				return new byte[][,] {Alpha, Red, Green, Blue};
+				return new byte[][,] {Red, Green, Blue};
 			}
 			set { LockWrite(value); }
 		}
@@ -37,10 +35,22 @@ namespace MolyMade.FFT
 		public BitmapTransformer(Bitmap bmp)
 		{
 			Bmp = bmp;
+			Pixels = LockRead(Bmp);
 		}
 
 		public BitmapTransformer(string path) : this(new Bitmap(path))
 		{
+		}
+
+		public BitmapTransformer(byte[,] r, byte[,] g, byte[,] b)
+		{
+			var p = new byte[][,] {r, g, b};
+			if (p.All(i =>
+				i.GetUpperBound(0) == p[0].GetUpperBound(0) && i.GetUpperBound(1) == p[0].GetUpperBound(1)))
+			{
+				Bmp = new Bitmap(r.GetUpperBound(0), r.GetUpperBound(1));
+				Argb = p;
+			}
 		}
 
 		private byte[] LockRead(Bitmap bitmap)

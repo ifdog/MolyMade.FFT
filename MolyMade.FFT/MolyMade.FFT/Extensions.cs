@@ -18,7 +18,7 @@ namespace MolyMade.FFT
 			return new Matrix<T>(iEnumerable);
 		}
 
-		public static Matrix<T> ToMatrrix<T>(this T[,] array)
+		public static Matrix<T> ToMatrix<T>(this T[,] array)
 		{
 			return new Matrix<T>(array);
 		}
