@@ -27,7 +27,6 @@ namespace MolyMade.FFT
 
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
-			BitmapTransformer t  = new BitmapTransformer(@"D:\frice.png");
 
 		}
 	}

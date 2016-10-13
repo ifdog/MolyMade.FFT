@@ -13,38 +13,28 @@ using System.Runtime.InteropServices;
 
 namespace MolyMade.FFT
 {
-	public class BitmapTransformer
+	public class BitmapTransformer : IDisposable, ICloneable
 	{
+		internal Bitmap Bitmap;
+		internal byte[] Pixels;
+		internal byte[,] Alpha => Pixels.TakeEvery(3, 4).Fold2D(Bitmap.Width);
+		internal byte[,] Red => Pixels.TakeEvery(2, 4).Fold2D(Bitmap.Width);
+		internal byte[,] Green => Pixels.TakeEvery(1, 4).Fold2D(Bitmap.Width);
+		internal byte[,] Blue => Pixels.TakeEvery(0, 4).Fold2D(Bitmap.Width);
 
-		private readonly Bitmap _bitmap;
-		private readonly byte[] _pixels;
-
-		public byte[,] Alpha
+		public byte[][,] Argb
 		{
-			get { return _pixels.TakeEvery(3, 4).Fold2D(_bitmap.Width); }
-			set { _pixels.PutEvery(value.Unfold2D(), 3, 4); }
-		}
-		public byte[,] Red
-		{
-			get { return _pixels.TakeEvery(2, 4).Fold2D(_bitmap.Width); }
-			set { _pixels.PutEvery(value.Unfold2D(), 2, 4); }
-		}
-		public byte[,] Green
-		{
-			get { return _pixels.TakeEvery(1, 4).Fold2D(_bitmap.Width); }
-			set { _pixels.PutEvery(value.Unfold2D(), 1, 4); }
-		}
-		public byte[,] Blue
-		{
-			get { return _pixels.TakeEvery(0, 4).Fold2D(_bitmap.Width); }
-			set { _pixels.PutEvery(value.Unfold2D(), 0, 4); }
+			get
+			{
+				Pixels = LockRead(Bitmap);
+				return new byte[][,] {Alpha, Red, Green, Blue};
+			}
+			set { LockWrite(value); }
 		}
 
 		public BitmapTransformer(Bitmap bmp)
 		{
-			_bitmap = bmp;
-			_pixels = LockRead(_bitmap);
-
+			Bitmap = bmp;
 		}
 
 		public BitmapTransformer(string path) : this(new Bitmap(path))
@@ -53,14 +43,39 @@ namespace MolyMade.FFT
 
 		private byte[] LockRead(Bitmap bitmap)
 		{
-			var bmpData = _bitmap.LockBits(new Rectangle(0, 0, _bitmap.Width, _bitmap.Height),
-				ImageLockMode.ReadOnly, _bitmap.PixelFormat);
+			var bmpData = Bitmap.LockBits(new Rectangle(0, 0, Bitmap.Width, Bitmap.Height),
+				ImageLockMode.ReadOnly, Bitmap.PixelFormat);
 			var ptr = bmpData.Scan0;
 			var bytes = new byte[Math.Abs(bmpData.Stride)*bitmap.Height];
-			Marshal.Copy(ptr,bytes,0,bytes.Length);
+			Marshal.Copy(ptr, bytes, 0, bytes.Length);
 			bitmap.UnlockBits(bmpData);
 			return bytes;
 		}
 
+		private void LockWrite(byte[][,] pixels)
+		{
+			if (pixels.Length == 4 &&
+			    pixels.All(i =>
+				    i.GetUpperBound(0) == pixels[0].GetUpperBound(0) && i.GetUpperBound(1) == pixels[0].GetUpperBound(1)))
+			{
+				var bmpData = Bitmap.LockBits(new Rectangle(0, 0, Bitmap.Width, Bitmap.Height),
+					ImageLockMode.WriteOnly, Bitmap.PixelFormat);
+				var ptr = bmpData.Scan0;
+				var bytes = new byte[4*pixels[0].GetUpperBound(0)*pixels[0].GetUpperBound(1)];
+				Enumerable.Range(0, 4).ForEach(i => bytes.PutEvery(pixels[i].Unfold2D(), 3 - i, 4));
+				Marshal.Copy(bytes, 0, ptr, pixels.Length);
+				Bitmap.UnlockBits(bmpData);
+			}
+		}
+
+		public void Dispose()
+		{
+			Bitmap.Dispose();
+		}
+
+		public object Clone()
+		{
+			return new BitmapTransformer(this.Bitmap);
+		}
 	}
 }

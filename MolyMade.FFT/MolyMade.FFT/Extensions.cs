@@ -19,13 +19,13 @@ namespace MolyMade.FFT
 			return new Matrix<T>(array);
 		}
 
-		public static T[] TakeEvery<T>(this T[] array, int start,int step)
+		public static T[] TakeEvery<T>(this T[] array, int start, int step)
 		{
 			if (start < 0 && start > array.Length) return null;
 			var newArray = new T[start == 0 ? (array.Length - start)/step : (array.Length - start)/step + 1];
 			for (int i = 0; i < newArray.Length; i++)
 			{
-				newArray[i] = array[start+i*step];
+				newArray[i] = array[start + i*step];
 			}
 			return newArray;
 		}
@@ -36,7 +36,7 @@ namespace MolyMade.FFT
 			var newArray = new T[array.Length];
 			for (int i = 0; i < newArray.Length; i++)
 			{
-				if (i>=start&&(i - start)%step == 0&&(i-start)/step<slice.Length)
+				if (i >= start && (i - start)%step == 0 && (i - start)/step < slice.Length)
 				{
 					newArray[i] = slice[(i - start)/step];
 				}
@@ -52,7 +52,7 @@ namespace MolyMade.FFT
 		{
 			if (width == 0) return null;
 			int height = array.Length%width == 0 ? array.Length/width : array.Length/width + 1;
-			T[,] newArray = new T[height,width];
+			T[,] newArray = new T[height, width];
 			for (int i = 0; i < array.Length; i++)
 			{
 				newArray[i/width, i%width] = array[i];
@@ -75,5 +75,12 @@ namespace MolyMade.FFT
 			return newArray;
 		}
 
+		public static void ForEach<T>(this IEnumerable<T> iEnumerable, Action<T> action)
+		{
+			foreach (var v in iEnumerable)
+			{
+				action(v);
+			}
+		}
 	}
 }
