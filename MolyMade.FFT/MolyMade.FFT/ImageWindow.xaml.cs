@@ -10,26 +10,26 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace MolyMade.FFT
 {
 	/// <summary>
-	/// Interaction logic for MainWindow.xaml
+	/// ImageWindow.xaml 的交互逻辑
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class ImageWindow : Window
 	{
-		public MainWindow()
+		public ImageWindow(string title, BitmapImage image)
 		{
 			InitializeComponent();
+			this.Title = title;
+			this.image.Source = image;
+			this.image.Width = image.Width;
 		}
 
 		private void button_Click(object sender, RoutedEventArgs e)
 		{
-			BitmapTransformer bt = new BitmapTransformer(@"D:/1.bmp");
-			ImageWindow iw = new ImageWindow("new image",bt.BitmapImage);
-			iw.Show();
+			
 		}
 	}
 }
